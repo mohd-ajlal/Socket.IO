@@ -29,8 +29,21 @@ app.get("/", (req, res)=>{
 
 
 io.on("connection",(socket)=>{
-    console.log("A user connected");
-    console.log("Socket ID:", socket.id);
+    console.log("A user connected",socket.id);
+    // console.log("Socket ID:", );
+    // socket.emit("message", `Hello from server!`);
+    // socket.broadcast.emit("message", `${socket.id} has joined the chat`);
+
+    socket.on("message", (data) => {
+        console.log(data);
+        socket.broadcast.emit("recieve-message", data);
+      }
+      )
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected",  socket.id);
+    });
+
 })
 
 server.listen(PORT,()=>{
