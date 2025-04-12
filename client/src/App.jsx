@@ -3,12 +3,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 
 const App = () => {
-  const socket = useMemo(() => io("http://localhost:3000"), []);
+  const socket = useMemo(() => io("http://localhost:3000",
+    {
+      withCredentials: true,
+    }
+  ), []);
 
+  const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [room, setRoom] = useState("");
   const [socketId, setSocketId] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [roomName, setRoomName] = useState("");
 
   // console.log(messages);
 
@@ -17,6 +22,12 @@ const App = () => {
     socket.emit("message", {message, room});
     setMessage("");
   };
+
+  const joinRoomHandler = (e) => {
+    e.preventDefault();
+    socket.emit("join-room", roomName);
+    setRoomName("");
+  }
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -48,6 +59,21 @@ const App = () => {
       <Typography variant="h5" component="div" gutterBottom>
         {socketId}
       </Typography>
+
+      <form onSubmit={joinRoomHandler}>
+        <h5>Join Room</h5>
+        <TextField
+          id="outlined-basic"
+          label="Room Name"
+          variant="outlined"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+        />
+
+<Button type="submit" variant="contained" color="primary">
+          Join Room
+        </Button>
+      </form>
 
       <form onSubmit={handleSubmit}>
         <TextField
