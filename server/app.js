@@ -34,9 +34,11 @@ io.on("connection",(socket)=>{
     // socket.emit("message", `Hello from server!`);
     // socket.broadcast.emit("message", `${socket.id} has joined the chat`);
 
-    socket.on("message", (data) => {
-        console.log(data);
-        socket.broadcast.emit("recieve-message", data);
+    socket.on("message", ({room, message}) => {
+        console.log({room, message});
+        // socket.broadcast.emit("recieve-message", data);
+        io.to(room).emit("recieve-message", message);
+        // we can also use socket.to(room).emit("recieve-message", message);
       }
       )
 
